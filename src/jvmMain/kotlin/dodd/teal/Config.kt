@@ -6,7 +6,7 @@ import kotlin.reflect.KProperty
 class Config(path: String, vararg defaults: Pair<String, String>) {
 
     private val file: File
-    private val fallback = defaults.toMap()
+    private val fallback: Map<String, String>
     private val indexed = mutableListOf<Pair<String, String>>()
     private val internal = mutableMapOf<String, Pair<Int, String>>()
 
@@ -15,6 +15,12 @@ class Config(path: String, vararg defaults: Pair<String, String>) {
         if (!file.isFile) {
             file.createNewFile()
         }
+
+        val defaultList = defaults.toMutableList()
+        defaultList.add(Pair("speed", "1.0"))
+        defaultList.add(Pair("volume", "1.0"))
+
+        fallback = defaultList.toMap()
 
         val defined = mutableSetOf<String>()
 
@@ -29,7 +35,7 @@ class Config(path: String, vararg defaults: Pair<String, String>) {
             }
         }
 
-        for ((key, value) in defaults) {
+        for ((key, value) in defaultList) {
             if (!defined.contains(key)) {
                 indexed.add(Pair(key, value))
             }
